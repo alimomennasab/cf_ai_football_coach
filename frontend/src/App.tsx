@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -55,6 +56,25 @@ export default function App() {
     }
   };
 
+    const handleReset = () => {
+    setplaycall(null);
+    setFormData({
+      down: 1,
+      distance: '',
+      yardLine: 50,
+      quarter: 1,
+      timeMinutes: '',
+      timeSeconds: '',
+      ourScore: '',
+      theirScore: '',
+      weather: 0,
+      additionalInfo: '',
+    });
+
+    // scroll back to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const playcallRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -67,10 +87,23 @@ export default function App() {
   return (
     <div style={styles.page}>
       {loading && (
-          <div style={styles.loadingDiv}>
-            Generating playcall…
+        <div
+          style={styles.loadingOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="loading-title"
+        >
+          <div style={styles.loadingCard}>
+            <div style={styles.spinner} aria-hidden="true" />
+            <div>
+              <h2 id="loading-title" style={styles.loadingTitle}>Generating playcall…</h2>
+              <p style={styles.loadingSub}>
+                Reading the situation and weighing options.
+              </p>
+            </div>
           </div>
-        )}
+        </div>
+      )}
 
       <div style={styles.container}>
         <h1 style={styles.header}>🏈 AI Football Coach</h1>
@@ -227,13 +260,21 @@ export default function App() {
             />
           </label>
 
-          <button type="submit" style={styles.button}>Submit</button>
+          <button type="submit" style={styles.button}>Submit Situation</button>
         </form>
 
         {playcall && (
-          <div ref={playcallRef} style={styles.playcallDiv}>
-            {playcall}
+          <div>
+            <div ref={playcallRef} style={styles.playcallDiv}>
+              <ReactMarkdown>{playcall}</ReactMarkdown>
+            </div>
+            <button onClick={handleReset} type="submit" style={styles.button}>Reset Playcall</button>
           </div>
+
+          // <div ref={playcallRef} style={styles.playcallDiv}>
+          //   <ReactMarkdown>{playcall}</ReactMarkdown>
+          //   <button onClick={handleReset} type="submit" style={styles.button}>Reset Playcall</button>
+          // </div>
         )}
 
       </div>
@@ -326,6 +367,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: 10,
     cursor: 'pointer',
     transition: '0.2s ease-in-out',
+    width: '100%'
   },
   ticks: {
   display: 'flex',
@@ -342,8 +384,19 @@ const styles: { [key: string]: React.CSSProperties } = {
     width: '1rem',
   },
   loadingDiv: {
-    padding: "0.75rem", 
-    textAlign: "center",
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    color: 'black',
+    fontStyle: 'bold',
+    fontSize: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
   },
   playcallDiv: {
     marginTop: "1rem",
@@ -354,5 +407,49 @@ const styles: { [key: string]: React.CSSProperties } = {
     whiteSpace: "pre-wrap",
     lineHeight: 1.5,
     color: 'black',
-  }
+  },
+  loadingOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.35)',
+    backdropFilter: 'blur(4px)',
+    WebkitBackdropFilter: 'blur(4px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+  },
+
+  loadingCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    padding: '1.25rem 1.5rem',
+    borderRadius: 16,
+    background: 'rgba(255,255,255,0.9)',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+    border: '1px solid rgba(255,255,255,0.6)',
+  },
+
+  spinner: {
+    width: 28,
+    height: 28,
+    border: '3px solid rgba(42,124,247,0.25)',
+    borderTopColor: '#2a7cf7',
+    borderRadius: '50%',
+    animation: 'spin 0.9s linear infinite',
+  },
+
+  loadingTitle: {
+    margin: 0,
+    color: '#111827',
+    fontSize: '1rem',
+    fontWeight: 700,
+  },
+
+  loadingSub: {
+    margin: 0,
+    color: '#4b5563',
+    fontSize: '0.9rem',
+  },
 };
