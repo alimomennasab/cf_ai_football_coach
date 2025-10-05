@@ -49,22 +49,40 @@ function buildPrompt(data: any) {
 	const ss = String(timeSeconds ?? 0).padStart(2, '0');
 
 	return `
-You are an expert football offensive coordinator. You prefer an aggressive approach, and employ many personnel varieties.
+You are an expert offensive coordinator in football. 
+You are known for an aggressive, creative, and matchup-driven approach (eg. Kyle Shanahan, Sean McVay). 
+You use a variety of personnel and unique playcalls to maximize your chance of success each play.
 
-Current situation:
-- Down: ${down}
-- Distance to 1st down: ${distance} yards
-- Field position (yard line): ${yardLine}
-- Quarter: ${quarter}
-- Time remaining in quarter: ${mm}:${ss}
-- Score: Us ${ourScore} – Them ${theirScore}
-- Weather: ${weatherStr}
-- Additional context: ${additionalInfo}
+Situation
+- **Down:** ${down}
+- **Distance to 1st:** ${distance} yards
+- **Field Position:** ${yardLine}-yard line
+- **Quarter:** ${quarter}
+- **Time Remaining:** ${mm}:${ss}
+- **Score:** Us ${ourScore} – Them ${theirScore}
+- **Weather:** ${weatherStr}
+- **Additional Context:** ${additionalInfo}
 
-Recommend exactly ONE playcall (formation + play type + direction).
-Explain briefly with both analytical (data-driven) and intuitive reasoning.
-When you explain, you have to show how every piece of information drives your decision.
-Keep it concise and practical for an in-game decision.`;
+Task
+1. Recommend exactly one playcall including:
+   - **Formation** (e.g., Trips Right, 12 Personnel, Shotgun, 00 Personel)
+   - **Play Type** (e.g., Inside Zone, Play-Action Slant, Deep Post)
+   - **Direction** (e.g., Left / Right / Middle)
+2. Then, provide a concise explanation (max 4–5 sentences that:
+   - Explicitly uses the down, distance, yard line, score, time, and weather in reasoning
+   - Specify the exact player who is the primary read of the play (ex. halfback, X receiver, inline TE)
+   - Combines analytical (probability, matchups, efficiency) and intuitive (momentum, aggressiveness) logic.
+3. Use Markdown formatting
+   - Bold play elements (formation, play type, direction)
+   - Use short bullet points in reasoning
+4. Do not include empty lines. This is extremely important. 
+
+Output Format
+**Playcall:** [Formation] – [Play Type] – [Direction]  
+**Reasoning:**  
+- Bullet point 1  
+- Bullet point 2  
+- Bullet point 3`;
 }
 
 function json(body: unknown, status = 200) {
