@@ -2,6 +2,11 @@
 
 This project is an AI-powered football coaching assistant built entirely on Cloudflare that generates offensive play suggestions based on in-game scenarios.
 
+
+
+https://github.com/user-attachments/assets/9d9fe0c6-578c-449a-ab37-63e079218f7c
+
+
 ---
 
 
