@@ -25,7 +25,7 @@ const worker = {
 				const result = await (env.AI as any).run(MODEL, { prompt });
 				const message = (result as any)?.response ?? 'No response generated.';
 
-				return cors(json({ suggestion: message }));
+				return cors(json({ playcall: message }));
 			} catch (err) {
 				return cors(json({ error: (err as Error).message }, 500));
 			}

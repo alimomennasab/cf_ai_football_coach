@@ -48,3 +48,17 @@ Why?
 
 ---
 
+#### Step 4: Connecting backend & frontend
+- Issue with displaying results:
+``` 
+After I generate and display my playcall with 
+
+{playcall && (
+          <div ref={playcallRef} style={styles.playcallDiv}>
+            {playcall}
+          </div>
+        )}
+
+how can I automatically scroll the page down to the playcall div? 
+```
+

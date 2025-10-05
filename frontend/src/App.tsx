@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+
+const API = import.meta.env.VITE_API_URL;
 
 export default function App() {
+  const [loading, setLoading] = useState(false);
+  const [playcall, setplaycall] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     down: 1,
     distance: '',
@@ -29,15 +33,50 @@ export default function App() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setLoading(true);
+    setplaycall(null);
+    try {
+      const res = await fetch(`${API}/api/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Request failed: ${res.status}`);
+      }
+      const data = await res.json();
+      setplaycall(data.playcall || "No playcall returned.");
+
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const playcallRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (playcall && playcallRef.current) {
+      playcallRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [playcall]);
+
 
   return (
     <div style={styles.page}>
+      {loading && (
+          <div style={styles.loadingDiv}>
+            Generating playcall…
+          </div>
+        )}
+
       <div style={styles.container}>
-        <h1 style={styles.header}>🏈 AI Playcall Assistant</h1>
+        <h1 style={styles.header}>🏈 AI Football Coach</h1>
+        <p style = {{color:'black', fontStyle: 'italic', textAlign: 'center'}}>
+          Give me the scenario, I'll give you a play 
+        </p>
         <form onSubmit={handleSubmit} style={styles.form}>
           {/* Down */}
           <label style={styles.label}>
@@ -191,6 +230,12 @@ export default function App() {
           <button type="submit" style={styles.button}>Submit</button>
         </form>
 
+        {playcall && (
+          <div ref={playcallRef} style={styles.playcallDiv}>
+            {playcall}
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -296,4 +341,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: 'center',
     width: '1rem',
   },
+  loadingDiv: {
+    padding: "0.75rem", 
+    textAlign: "center",
+  },
+  playcallDiv: {
+    marginTop: "1rem",
+    padding: "1rem",
+    borderRadius: 12,
+    background: "#f4f7ff",
+    border: "1px solid #dbe5ff",
+    whiteSpace: "pre-wrap",
+    lineHeight: 1.5,
+    color: 'black',
+  }
 };
