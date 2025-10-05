@@ -25,6 +25,8 @@ const worker = {
 				const result = await (env.AI as any).run(MODEL, { prompt });
 				const message = (result as any)?.response ?? 'No response generated.';
 
+				console.log(message);
+
 				return cors(json({ playcall: message }));
 			} catch (err) {
 				return cors(json({ error: (err as Error).message }, 500));
@@ -47,7 +49,7 @@ function buildPrompt(data: any) {
 	const ss = String(timeSeconds ?? 0).padStart(2, '0');
 
 	return `
-You are an expert football offensive coordinator.
+You are an expert football offensive coordinator. You prefer an aggressive approach, and employ many personnel varieties.
 
 Current situation:
 - Down: ${down}
@@ -61,6 +63,7 @@ Current situation:
 
 Recommend exactly ONE playcall (formation + play type + direction).
 Explain briefly with both analytical (data-driven) and intuitive reasoning.
+When you explain, you have to show how every piece of information drives your decision.
 Keep it concise and practical for an in-game decision.`;
 }
 
